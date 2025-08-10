@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Image, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { Search, History, Info, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -8,8 +8,8 @@ const Header = () => {
   const navigation = [
     { name: 'Home', href: '/', icon: Sparkles },
     { name: 'Search', href: '/search', icon: Search },
-    { name: 'Image Analysis', href: '/image-analysis', icon: Image },
-    { name: 'Link Analyzer', href: '/link-analyzer', icon: LinkIcon },
+    { name: 'History', href: '/history', icon: History },
+    { name: 'About', href: '/about', icon: Info },
   ];
 
   return (

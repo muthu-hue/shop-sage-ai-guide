@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Search, Image, Link as LinkIcon, Sparkles, Zap, Shield, TrendingUp, Star } from 'lucide-react';
+import { Search, History, Info, Sparkles, Zap, Shield, TrendingUp, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,20 +10,20 @@ const Index = () => {
     {
       icon: Search,
       title: 'Smart Product Search',
-      description: 'AI-powered search to find exactly what you need across multiple platforms',
+      description: 'AI-powered search to find genuine product links and recommendations',
       link: '/search'
     },
     {
-      icon: Image,
-      title: 'Image Analysis',
-      description: 'Upload product images to extract attributes and verify authenticity',
-      link: '/image-analysis'
+      icon: History,
+      title: 'Search History',
+      description: 'Keep track of your previous searches and easily revisit products',
+      link: '/history'
     },
     {
-      icon: LinkIcon,
-      title: 'Link Analyzer',
-      description: 'Analyze product URLs for price tracking and website trustworthiness',
-      link: '/link-analyzer'
+      icon: Info,
+      title: 'About ShopSage',
+      description: 'Learn more about our AI-powered shopping assistant and features',
+      link: '/about'
     }
   ];
 
