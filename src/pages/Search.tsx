@@ -3,29 +3,65 @@ import { Search as SearchIcon, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSearchHistory, SearchResult } from '@/contexts/SearchHistoryContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const { addSearchToHistory } = useSearchHistory();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to search and save your history.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSearching(true);
     setHasSearched(true);
-    // Simulate search results
-    setSearchResults([
+    
+    // Simulate API search delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Generate mock results based on search query
+    const mockResults: SearchResult[] = [
       {
-        id: 1,
-        title: "Best deals for " + searchQuery,
-        description: "Here are the most genuine and trusted links for your search:",
-        links: [
-          { name: "Amazon", url: "https://amazon.com", price: "$99.99", verified: true },
-          { name: "Best Buy", url: "https://bestbuy.com", price: "$104.99", verified: true },
-          { name: "Walmart", url: "https://walmart.com", price: "$97.99", verified: true }
-        ]
+        name: `${searchQuery} - Premium Model`,
+        price: `$${(Math.random() * 500 + 50).toFixed(2)}`,
+        store: "Amazon",
+        url: "https://amazon.com",
+        verified: true
+      },
+      {
+        name: `${searchQuery} - Best Value`,
+        price: `$${(Math.random() * 400 + 40).toFixed(2)}`,
+        store: "Best Buy",
+        url: "https://bestbuy.com",
+        verified: true
+      },
+      {
+        name: `${searchQuery} - Budget Option`,
+        price: `$${(Math.random() * 300 + 30).toFixed(2)}`,
+        store: "Walmart",
+        url: "https://walmart.com",
+        verified: true
       }
-    ]);
+    ];
+    
+    setSearchResults(mockResults);
+    addSearchToHistory(searchQuery, mockResults);
+    setIsSearching(false);
   };
 
 
@@ -92,50 +128,55 @@ const Search = () => {
                 onClick={handleSearch} 
                 variant="hero" 
                 size="lg"
+                disabled={isSearching}
               >
-                Search
+                {isSearching ? 'Searching...' : 'Search'}
               </Button>
             </div>
 
             <div className="space-y-6">
               {searchResults.map((result) => (
+                disabled={isSearching}
                 <Card key={result.id} className="shadow-card">
                   <CardHeader>
                     <CardTitle className="text-xl">{result.title}</CardTitle>
                     <CardDescription>{result.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
+              disabled={isSearching}
                     <div className="grid gap-4">
-                      {result.links.map((link: any, index: number) => (
+              {isSearching ? 'Searching...' : 'Search'}
                         <div key={index} className="flex items-center justify-between p-4 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors">
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center">
                               <span className="text-white font-bold text-sm">{link.name[0]}</span>
-                            </div>
-                            <div>
-                              <p className="font-medium">{link.name}</p>
-                              <p className="text-sm text-muted-foreground">{link.url}</p>
-                            </div>
+            {searchResults.length > 0 && (
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle className="text-xl">Search Results for "{searchQuery}"</CardTitle>
+                  <CardDescription>Here are the most genuine and trusted links for your search:</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4">
+                          <span className="font-bold text-lg text-primary">{result.price}</span>
+                          {result.verified && (
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">{result.store[0]}</span>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-bold text-lg text-primary">{link.price}</span>
-                            {link.verified && (
-                              <div className="flex items-center gap-1 text-green-600 text-sm">
-                                <div className="h-2 w-2 bg-green-600 rounded-full"></div>
-                                Verified
-                              </div>
-                            )}
-                            <Button variant="accent" size="sm">
-                              Visit Store
-                            </Button>
+                          <div>
+                          <Button variant="accent" size="sm" asChild>
+                            <a href={result.url} target="_blank" rel="noopener noreferrer">
+                            <p className="text-sm text-muted-foreground">from {result.store}</p>
+                            </a>
                           </div>
                         </div>
                       ))}
                     </div>
                   </CardContent>
-                </Card>
-              ))}
-            </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </div>
